@@ -65,7 +65,7 @@ pipeline {
         expression {
           openshift.withCluster() {
             openshift.withProject("mapit-dev") {
-              return !openshift.selector('dc', 'mapit-dev').exists()
+              return !openshift.selector('dc', 'mapit').exists()
             }
           }
         }
@@ -74,7 +74,7 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject("mapit-dev") {
-              openshift.newApp("mapit:dev", "--name=mapit-dev").narrow('svc').expose()
+              openshift.newApp("mapit:dev", "--name=mapit").narrow('svc').expose()
             }
           }
         }
