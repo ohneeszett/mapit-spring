@@ -74,7 +74,7 @@ pipeline {
         script {
           openshift.withCluster() {
             openshift.withProject("mapit-dev") {
-              openshift.newApp("mapit:dev", "--name=mapit").narrow('svc').expose()
+              openshift.newApp("mapit/mapit:dev", "--name=mapit").narrow('svc').expose()
             }
           }
         }
