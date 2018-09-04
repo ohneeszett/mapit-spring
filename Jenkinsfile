@@ -24,6 +24,15 @@ pipeline {
         }
       }
     }
+    stage('Build Image') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
+          }
+        }
+      }
+    }
     stage('Setup dev environment') {
       when {
         expression {
@@ -35,18 +44,9 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject() {
+            openshift.withProject("mapit-dev") {
               echo "Using project: ${openshift.project()}"
             }
-          }
-        }
-      }
-    }
-    stage('Build Image') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.selector("bc", "mapit").startBuild("--from-file=target/mapit-spring.jar", "--wait")
           }
         }
       }
@@ -64,14 +64,18 @@ pipeline {
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc', 'mapit-dev').exists()
+            openshift.withProject("mapit-dev") {
+              return !openshift.selector('dc', 'mapit-dev').exists()
+            }
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("mapit:latest", "--name=mapit-dev").narrow('svc').expose()
+            openshift.withProject("mapit-dev") {
+              openshift.newApp("mapit:dev", "--name=mapit-dev").narrow('svc').expose()
+            }
           }
         }
       }
