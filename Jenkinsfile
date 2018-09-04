@@ -24,6 +24,24 @@ pipeline {
         }
       }
     }
+    stage('Setup dev environment') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("project", "mapit-dev").exists();
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.withProject() {
+              echo "Using project: ${openshift.project()}"
+            }
+          }
+        }
+      }
+    }
     stage('Build Image') {
       steps {
         script {
