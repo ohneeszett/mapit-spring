@@ -5,7 +5,7 @@ pipeline {
   stages {
     stage('Build App') {
       steps {
-        sh "mvn install"
+        sh "mvn -B install"
       }
     }
     stage('Create Image Builder') {
