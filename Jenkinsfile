@@ -93,14 +93,18 @@ pipeline {
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc', 'mapit-stage').exists()
+            openshift.withProject("mapit-stage") {
+              return !openshift.selector('dc', 'mapit').exists()
+            }
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("mapit:stage", "--name=mapit-stage").narrow('svc').expose()
+            openshift.withProject("mapit-stage") {
+              openshift.newApp("mapit/mapit:stage", "--name=mapit").narrow('svc').expose()
+            }
           }
         }
       }
